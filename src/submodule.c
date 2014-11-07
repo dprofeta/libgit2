@@ -1013,7 +1013,7 @@ int git_submodule_init(git_submodule *sm, int overwrite)
 
 	/* write "submodule.NAME.url" */
 
-	if ((git_submodule_resolve_url(&effective_submodule_url, sm->repo, sm->url)) < 0 ||
+	if ((error = git_submodule_resolve_url(&effective_submodule_url, sm->repo, sm->url)) < 0 ||
 		(error = git_buf_printf(&key, "submodule.%s.url", sm->name)) < 0 ||
 		(error = git_config__update_entry(
 			cfg, key.ptr, effective_submodule_url.ptr, overwrite != 0, false)) < 0)
@@ -2027,16 +2027,31 @@ static int lookup_head_remote_key(git_buf *remote_name, git_repository *repo)
 	if ((error = git_repository_head(&head, repo)) < 0)
 		return error;
 
-	/* lookup remote tracking branch of HEAD */
-	if (!(error = git_branch_upstream_name(
-			&upstream_name, repo, git_reference_name(head))))
-	{
-		/* lookup remote of remote tracking branch */
-		error = git_branch_remote_name(remote_name, repo, upstream_name.ptr);
-
-		git_buf_free(&upstream_name);
+	/**
+	 * If head does not refer to a branch, then return
+	 * GIT_ENOTFOUND to indicate that we could not find
+	 * a remote key for the local tracking branch HEAD points to.
+	 **/
+	if (!git_reference_is_branch(head)) {
+		giterr_set(GITERR_INVALID,
+			"HEAD does not refer to a branch.");
+		error = GIT_ENOTFOUND;
+		goto done;
 	}
 
+	/* lookup remote tracking branch of HEAD */
+	if ((error = git_branch_upstream_name(
+		&upstream_name,
+		repo,
+		git_reference_name(head))) < 0)
+		goto done;
+
+	/* lookup remote of remote tracking branch */
+	if ((error = git_branch_remote_name(remote_name, repo, upstream_name.ptr)) < 0)
+		goto done;
+
+done:
+	git_buf_free(&upstream_name);
 	git_reference_free(head);
 
 	return error;
