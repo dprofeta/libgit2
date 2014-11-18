@@ -24,7 +24,7 @@ void test_submodule_update__unitialized_submodule_no_init(void)
 	/* updating an unitialized repository throws */
 	cl_git_fail_with(
 		GIT_ERROR,
-		git_submodule_do_update(sm, 0, &update_options));
+		git_submodule_update(sm, 0, &update_options));
 
 	git_submodule_free(sm);
 }
@@ -111,7 +111,7 @@ void test_submodule_update__update_submodule(void)
 
 	/* initialize and update the submodule */
 	cl_git_pass(git_submodule_init(sm, 0));
-	cl_git_pass(git_submodule_do_update(sm, 0, &update_options));
+	cl_git_pass(git_submodule_update(sm, 0, &update_options));
 
 	/* verify state */
 	cl_git_pass(git_submodule_status(&submodule_status, sm));
@@ -149,7 +149,7 @@ void test_submodule_update__update_and_init_submodule(void)
 		GIT_SUBMODULE_STATUS_WD_UNINITIALIZED);
 
 	/* update (with option to initialize sub repo) */
-	cl_git_pass(git_submodule_do_update(sm, 1, &update_options));
+	cl_git_pass(git_submodule_update(sm, 1, &update_options));
 
 	/* verify expected state */
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "be3563ae3f795b2b4353bcce3a527ad0a4f7f644") == 0);
@@ -183,7 +183,7 @@ void test_submodule_update__update_already_checked_out_submodule(void)
 		GIT_SUBMODULE_STATUS_IN_CONFIG |
 		GIT_SUBMODULE_STATUS_WD_UNINITIALIZED);
 
-	cl_git_pass(git_submodule_do_update(sm, 1, &update_options));
+	cl_git_pass(git_submodule_update(sm, 1, &update_options));
 
 	/* verify expected state */
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "be3563ae3f795b2b4353bcce3a527ad0a4f7f644") == 0);
@@ -219,7 +219,7 @@ void test_submodule_update__update_already_checked_out_submodule(void)
 	 * Now, the HEAD, index, and Workdir commits should all be updated to
 	 * the new commit.
 	 */
-	cl_git_pass(git_submodule_do_update(sm, 0, &update_options));
+	cl_git_pass(git_submodule_update(sm, 0, &update_options));
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);
 	cl_assert(git_oid_streq(git_submodule_wd_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);
 	cl_assert(git_oid_streq(git_submodule_index_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);
@@ -257,7 +257,7 @@ void test_submodule_update__update_blocks_on_dirty_wd(void)
 		GIT_SUBMODULE_STATUS_IN_CONFIG |
 		GIT_SUBMODULE_STATUS_WD_UNINITIALIZED);
 
-	cl_git_pass(git_submodule_do_update(sm, 1, &update_options));
+	cl_git_pass(git_submodule_update(sm, 1, &update_options));
 
 	/* verify expected state */
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "be3563ae3f795b2b4353bcce3a527ad0a4f7f644") == 0);
@@ -295,7 +295,7 @@ void test_submodule_update__update_blocks_on_dirty_wd(void)
 	cl_git_write2file("submodule_simple/testrepo/branch_file.txt", "a conflicting edit", 0,
 		O_WRONLY | O_CREAT | O_TRUNC, 0755);
 
-	cl_git_fail(git_submodule_do_update(sm, 0, &update_options));
+	cl_git_fail(git_submodule_update(sm, 0, &update_options));
 
 	/* verify that the expected callbacks have been called. */
 	cl_assert_equal_i(1, update_payload.checkout_notify_called);
@@ -330,7 +330,7 @@ void test_submodule_update__can_force_update(void)
 		GIT_SUBMODULE_STATUS_IN_CONFIG |
 		GIT_SUBMODULE_STATUS_WD_UNINITIALIZED);
 
-	cl_git_pass(git_submodule_do_update(sm, 1, &update_options));
+	cl_git_pass(git_submodule_update(sm, 1, &update_options));
 
 	/* verify expected state */
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "be3563ae3f795b2b4353bcce3a527ad0a4f7f644") == 0);
@@ -369,7 +369,7 @@ void test_submodule_update__can_force_update(void)
 
 	/* forcefully checkout and verify the submodule state was updated. */
 	update_options.checkout_opts.checkout_strategy = GIT_CHECKOUT_FORCE;
-	cl_git_pass(git_submodule_do_update(sm, 0, &update_options));
+	cl_git_pass(git_submodule_update(sm, 0, &update_options));
 	cl_assert(git_oid_streq(git_submodule_head_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);
 	cl_assert(git_oid_streq(git_submodule_wd_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);
 	cl_assert(git_oid_streq(git_submodule_index_id(sm), "a65fedf39aefe402d3bb6e24df4d4f5fe4547750") == 0);

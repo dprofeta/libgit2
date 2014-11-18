@@ -167,7 +167,7 @@ typedef struct git_submodule_update_options {
  *         function, or a negative value to indicate an error (use
  *         `giterr_last` for a detailed error message).
  */
-GIT_EXTERN(int) git_submodule_do_update(git_submodule *submodule, int init, git_submodule_update_options *options);
+GIT_EXTERN(int) git_submodule_update(git_submodule *submodule, int init, git_submodule_update_options *options);
 
 /**
  * Lookup submodule information by name or path.
@@ -467,7 +467,7 @@ GIT_EXTERN(git_submodule_ignore_t) git_submodule_set_ignore(
  * @return The current git_submodule_update_t value that will be used
  *         for this submodule.
  */
-GIT_EXTERN(git_submodule_update_t) git_submodule_update(
+GIT_EXTERN(git_submodule_update_t) git_submodule_update_strategy(
 	git_submodule *submodule);
 
 /**

@@ -790,7 +790,7 @@ git_submodule_ignore_t git_submodule_set_ignore(
 	return old;
 }
 
-git_submodule_update_t git_submodule_update(git_submodule *submodule)
+git_submodule_update_t git_submodule_update_strategy(git_submodule *submodule)
 {
 	assert(submodule);
 	return (submodule->update < GIT_SUBMODULE_UPDATE_CHECKOUT) ?
@@ -895,7 +895,7 @@ static int git_submodule_update_repo_init_cb(
 	return submodule_repo_create(out, sm->repo, path);
 }
 
-int git_submodule_do_update(git_submodule *sm, int init, git_submodule_update_options *_update_options)
+int git_submodule_update(git_submodule *sm, int init, git_submodule_update_options *_update_options)
 {
 	int error;
 	unsigned int submodule_status;
