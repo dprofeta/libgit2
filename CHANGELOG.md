@@ -107,3 +107,7 @@ v0.21 + 1
 
 * The THREADSAFE option to build libgit2 with threading support has
   been flipped to be on by default.
+
+* The git_submodule_update function was renamed to
+  git_submodule_update_strategy. git_submodule_update is now used to
+  provide functionalty similar to "git submodule update".
